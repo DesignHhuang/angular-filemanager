@@ -195,7 +195,7 @@
             });
         };
 
-        $scope.download = function() {
+        /* $scope.download = function() {
             var item = $scope.singleSelection();
             if ($scope.selectionHas('dir')) {
                 return;
@@ -204,7 +204,30 @@
                 return $scope.apiMiddleware.download(item);
             }
             return $scope.apiMiddleware.downloadMultiple($scope.temps);
-        };
+        }; */
+        //实际开发中改变下载接口 配合后台rest几口   javalocl(restful huang)
+        $scope.download = function () {
+        var item = $scope.singleSelection();
+        var timestamp = new Date().getTime().toString().substr(8, 13);
+        var toFilename = timestamp + '-' + fileManagerConfig.multipleDownloadFileName;
+        if ($scope.selectionHas('dir')) {
+          return;
+        }
+        if (item) {
+          // return $scope.apiMiddleware.download(item);
+          $scope.apiMiddleware.download(item).then(function (data) {
+            var blob = new Blob([data]);
+            saveAs(blob, item.model.name);
+          });
+          return;
+        }
+        $scope.apiMiddleware.downloadMultiple($scope.temps).then(function(data){
+            var blob = new Blob([data]);
+            saveAs(blob, toFilename);
+        })
+        return;
+      };
+
 
         $scope.copy = function() {
             var item = $scope.singleSelection();

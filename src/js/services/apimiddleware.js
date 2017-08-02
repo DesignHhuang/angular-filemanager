@@ -73,8 +73,7 @@
             return this.apiHandler.getUrl(fileManagerConfig.downloadFileUrl, itemPath);
         };
 
-        ApiMiddleware.prototype.download = function(item, forceNewWindow) {
-            //TODO: add spinner to indicate file is downloading
+        /* ApiMiddleware.prototype.download = function(item, forceNewWindow) {
             var itemPath = this.getFilePath(item);
             var toFilename = item.model.name;
 
@@ -100,6 +99,36 @@
                 fileManagerConfig.downloadMultipleUrl, 
                 items, 
                 toFilename, 
+                fileManagerConfig.downloadFilesByAjax,
+                forceNewWindow
+            );
+        }; */
+        //这是开发过程中修改的下载和打包下载代码 by huangxiaomin
+        ApiMiddleware.prototype.download = function(item, forceNewWindow) {
+            var itemPath = this.getFilePath(item);
+            var toFilename = item.model.name;
+
+            if (item.isFolder()) {
+                return;
+            }
+            
+            return this.apiHandler.download(
+                this.options.downloadFileUrl, 
+                itemPath,
+                toFilename,
+                fileManagerConfig.downloadFilesByAjax,
+                forceNewWindow
+            );
+        };
+
+        ApiMiddleware.prototype.downloadMultiple = function(files, forceNewWindow) {
+            var items = this.getFileList(files);
+            var timestamp = new Date().getTime().toString().substr(8, 13);
+            var toFilename = timestamp + '-' + fileManagerConfig.multipleDownloadFileName;
+            return this.apiHandler.downloadMultiple(
+                this.options.downloadMultipleUrl,
+                items,
+                toFilename,
                 fileManagerConfig.downloadFilesByAjax,
                 forceNewWindow
             );
